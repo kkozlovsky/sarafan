@@ -27,10 +27,9 @@ class MessageController {
         return message
     }
 
-    @PutMapping
+    @PutMapping("{id}")
     fun update(@PathVariable id: String, @RequestBody message: MutableMap<String, String>): Map<String, String> {
-        val messageFromDb: MutableMap<String, String> = message["id"]?.let { findMessage(it) } as MutableMap<String, String>?
-                ?: throw NotFoundException()
+        val messageFromDb: MutableMap<String, String> = findMessage(id) as MutableMap<String, String>
         messageFromDb.putAll(message)
         messageFromDb["id"] = id
         return messageFromDb
