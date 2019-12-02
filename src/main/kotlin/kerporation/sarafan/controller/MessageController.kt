@@ -1,48 +1,42 @@
 package kerporation.sarafan.controller
 
-import kerporation.sarafan.exceptions.NotFoundException
+import com.fasterxml.jackson.annotation.JsonView
+import kerporation.sarafan.domain.Message
+import kerporation.sarafan.domain.Views
+import kerporation.sarafan.repo.MessageRepo
+import org.springframework.beans.BeanUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("message")
-class MessageController {
-
-    private var counter: Int = 4
-
-    private var messages: MutableList<Map<String, String>> = mutableListOf(
-            mapOf("id" to "1", "text" to "First message"),
-            mapOf("id" to "2", "text" to "Second message"),
-            mapOf("id" to "3", "text" to "Third message"))
+class MessageController @Autowired constructor(
+        private val messageRepo: MessageRepo
+) {
 
     @GetMapping
-    fun list(): List<Map<String, String>> = messages
+    @JsonView(Views.IdName::class)
+    fun list(): MutableList<Message> = messageRepo.findAll()
 
     @GetMapping("{id}")
-    fun findOne(@PathVariable id: String): Map<String, String> = findMessage(id)
+    @JsonView(Views.FullMessage::class)
+    fun getOne(@PathVariable("id") message: Message): Message = message
 
     @PostMapping
-    fun create(@RequestBody message: MutableMap<String, String>): Map<String, String> {
-        message["id"] = counter++.toString()
-        messages.add(message)
-        return message
+    fun create(@RequestBody message: Message): Message {
+        return messageRepo.save(message)
     }
 
     @PutMapping("{id}")
-    fun update(@PathVariable id: String, @RequestBody message: MutableMap<String, String>): Map<String, String> {
-        val messageFromDb: MutableMap<String, String> = findMessage(id) as MutableMap<String, String>
-        messageFromDb.putAll(message)
-        messageFromDb["id"] = id
-        return messageFromDb
+    fun update(@PathVariable("id") messageFromDb: Message,
+               @RequestBody message: Message): Message {
+        BeanUtils.copyProperties(message, messageFromDb, "id")
+        return messageRepo.save(messageFromDb)
     }
 
     @DeleteMapping("{id}")
-    fun delete(@PathVariable id: String) {
-        val message: Map<String, String> = findMessage(id)
-        messages.remove(message)
-    }
-
-    private fun findMessage(id: String): Map<String, String> {
-        return messages.firstOrNull { it["id"] == id } ?: throw NotFoundException()
+    fun delete(@PathVariable("id") message: Message) {
+        messageRepo.delete(message)
     }
 
 }
