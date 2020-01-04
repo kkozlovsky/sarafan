@@ -16,8 +16,8 @@ import java.time.LocalDateTime
 @EnableOAuth2Sso
 class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
-    override fun configure(http: HttpSecurity?) {
-        http!!.authorizeRequests()
+    override fun configure(http: HttpSecurity) {
+        http.authorizeRequests()
                 .mvcMatchers("/").permitAll()
                 .anyRequest().authenticated()
                 .and()
