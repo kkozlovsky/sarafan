@@ -6,6 +6,8 @@ import kerporation.sarafan.domain.Views
 import kerporation.sarafan.repo.MessageRepo
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.messaging.handler.annotation.MessageMapping
+import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -37,6 +39,12 @@ class MessageController @Autowired constructor(
     @DeleteMapping("{id}")
     fun delete(@PathVariable("id") message: Message) {
         messageRepo.delete(message)
+    }
+
+    @MessageMapping("/changeMessage")
+    @SendTo("/topic/activity")
+    fun change(message: Message) : Message {
+        return messageRepo.save(message)
     }
 
 }
