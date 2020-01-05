@@ -30,3 +30,6 @@ out/
 
 ### VS Code ###
 .vscode/
+/node_modules/
+/src/main/resources/keys.txt
+/yarn.lock
