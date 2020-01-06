@@ -18,8 +18,10 @@ class MainController(@Autowired private val messageRepo: MessageRepo,
     @GetMapping
     fun index(model: Model, @AuthenticationPrincipal user: User?): String {
         val data: HashMap<Any, Any?> = hashMapOf()
-        data["profile"] = user
-        data["messages"] = messageRepo.findAll()
+        if (user != null) {
+            data["profile"] = user
+            data["messages"] = messageRepo.findAll()
+        }
         model.addAttribute("frontendData", data)
         model.addAttribute("isDevMode", "dev" == profile)
         return "index"
