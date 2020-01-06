@@ -33,3 +33,4 @@ out/
 /node_modules/
 /src/main/resources/keys.txt
 /yarn.lock
+/package-lock.json
