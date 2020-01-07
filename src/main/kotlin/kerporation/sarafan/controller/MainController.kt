@@ -18,8 +18,8 @@ class MainController(@Autowired private val messageRepo: MessageRepo,
     @GetMapping
     fun index(model: Model, @AuthenticationPrincipal user: User?): String {
         val data: HashMap<Any, Any?> = hashMapOf()
-        if (user != null) {
-            data["profile"] = user
+        user?.let {
+            data["profile"] = it
             data["messages"] = messageRepo.findAll()
         }
         model.addAttribute("frontendData", data)
