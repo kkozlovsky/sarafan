@@ -28,26 +28,44 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     }
 
 
+//    @Bean
+//    fun googlePrincipalExtractor(userDetailsRepo: UserDetailsRepo): PrincipalExtractor {
+//        return GooglePrincipalExtractor(userDetailsRepo = userDetailsRepo)
+//    }
+//
+//    class GooglePrincipalExtractor(val userDetailsRepo: UserDetailsRepo) : PrincipalExtractor {
+//
+//        override fun extractPrincipal(map: MutableMap<String, Any>): User {
+//            val id: String = map["sub"] as String
+//            var user: User? = userDetailsRepo.findById(id).orElse(null)
+//            if (user == null) {
+//                user = User()
+//                user.id = id
+//                user.name = map["name"] as String
+//                user.email = map["email"] as String
+//                user.locale = map["locale"] as String
+//                user.userpic = map["picture"] as String
+//            }
+//            user.lastVisit = LocalDateTime.now()
+//            return userDetailsRepo.save(user)
+//        }
+//    }
+
     @Bean
-    fun googlePrincipalExtractor(userDetailsRepo: UserDetailsRepo): PrincipalExtractor {
-        return GooglePrincipalExtractor(userDetailsRepo = userDetailsRepo)
-    }
-
-    class GooglePrincipalExtractor(val userDetailsRepo: UserDetailsRepo) : PrincipalExtractor {
-
-        override fun extractPrincipal(map: MutableMap<String, Any>): User {
-            val id: String = map["sub"] as String
-            var user: User? = userDetailsRepo.findById(id).orElse(null)
-            if (user == null) {
-                user = User()
-                user.id = id
-                user.name = map["name"] as String
-                user.email = map["email"] as String
-                user.locale = map["locale"] as String
-                user.userpic = map["picture"] as String
+    fun principalExtractor(userDetailsRepo: UserDetailsRepo): PrincipalExtractor {
+        return PrincipalExtractor { map: Map<String, Any> ->
+            val id = map["sub"] as String
+            val user = userDetailsRepo.findById(id).orElseGet {
+                val newUser = User()
+                newUser.id = id
+                newUser.name = map["name"] as String
+                newUser.email = map["email"] as String
+                newUser.locale = map["locale"] as String
+                newUser.userpic = map["picture"] as String
+                newUser
             }
             user.lastVisit = LocalDateTime.now()
-            return userDetailsRepo.save(user)
+            userDetailsRepo.save(user)
         }
     }
 }
