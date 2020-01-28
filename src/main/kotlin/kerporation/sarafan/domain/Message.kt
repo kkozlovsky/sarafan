@@ -20,6 +20,15 @@ data class Message(
         @JsonView(Views.FullMessage::class)
         val creationDate: LocalDateTime = LocalDateTime.now()
 
+        @ManyToOne
+        @JoinColumn(name = "user_id")
+        @JsonView(Views.FullMessage::class)
+        var author: User? = null
+
+        @OneToMany(mappedBy = "message", orphanRemoval = true)
+        @JsonView(Views.FullMessage::class)
+        var comments: MutableList<Comment>? = null
+        
         @JsonView(Views.FullMessage::class)
         var link: String? = null
         @JsonView(Views.FullMessage::class)

@@ -3,6 +3,7 @@ package kerporation.sarafan.controller
 import com.fasterxml.jackson.annotation.JsonView
 import kerporation.sarafan.WsSender
 import kerporation.sarafan.domain.Message
+import kerporation.sarafan.domain.User
 import kerporation.sarafan.domain.Views
 import kerporation.sarafan.dto.EventType
 import kerporation.sarafan.dto.MetaDto
@@ -12,6 +13,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.io.IOException
 import java.util.function.BiConsumer
@@ -43,8 +45,10 @@ class MessageController @Autowired constructor(
     fun getOne(@PathVariable("id") message: Message): Message = message
 
     @PostMapping
-    fun create(@RequestBody message: Message): Message {
+    fun create(@RequestBody message: Message,
+               @AuthenticationPrincipal user: User): Message {
         fillMeta(message)
+        message.author = user
         val savedMessage = messageRepo.save(message)
         wsSender.accept(EventType.CREATE, savedMessage)
         return savedMessage

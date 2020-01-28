@@ -1,6 +1,9 @@
 package kerporation.sarafan.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectWriter
 import kerporation.sarafan.domain.User
+import kerporation.sarafan.domain.Views
 import kerporation.sarafan.repo.MessageRepo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -13,14 +16,18 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Controller
 @RequestMapping("/")
 class MainController(@Autowired private val messageRepo: MessageRepo,
-                     @Value("\${spring.profiles.active}") private val profile: String) {
+                     @Value("\${spring.profiles.active}") private val profile: String,
+                     private val mapper: ObjectMapper) {
+
+    private val writer: ObjectWriter = mapper.setConfig(mapper.serializationConfig).writerWithView(Views.FullMessage::class.java)
 
     @GetMapping
     fun index(model: Model, @AuthenticationPrincipal user: User?): String {
         val data: HashMap<Any, Any?> = hashMapOf()
         user?.let {
             data["profile"] = it
-            data["messages"] = messageRepo.findAll()
+            val messages: String = writer.writeValueAsString(messageRepo.findAll())
+            model.addAttribute("messages", messages)
         }
         model.addAttribute("frontendData", data)
         model.addAttribute("isDevMode", "dev" == profile)
