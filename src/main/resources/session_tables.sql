@@ -1,6 +1,6 @@
 -- auto-generated definition
-drop table if exists spring_session;
 drop table if exists spring_session_attributes;
+drop table if exists spring_session;
 
 create table spring_session
 (

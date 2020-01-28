@@ -71,7 +71,7 @@ class MessageController @Autowired constructor(
     }
 
     private fun fillMeta(message: Message) {
-        val text: String = message.text
+        val text: String = checkNotNull(message.text) {"Сообщение не может быть пустым"}
         var matcher = URL_REGEX.matcher(text)
         if (matcher.find()) {
             val url = text.substring(matcher.start(), matcher.end())

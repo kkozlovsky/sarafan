@@ -1,7 +1,9 @@
 package kerporation.sarafan.controller
 
+import com.fasterxml.jackson.annotation.JsonView
 import kerporation.sarafan.domain.Comment
 import kerporation.sarafan.domain.User
+import kerporation.sarafan.domain.Views
 import kerporation.sarafan.service.CommentService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -16,5 +18,8 @@ class CommentController(
         @Autowired private val commentService: CommentService
 ) {
     @PostMapping
-    fun create(@RequestBody  comment: Comment, @AuthenticationPrincipal user: User) = commentService.create(comment, user)
+    @JsonView(Views.FullMessage::class)
+    fun create(@RequestBody comment: Comment, @AuthenticationPrincipal user: User): Comment {
+        return commentService.create(comment, user)
+    }
 }

@@ -7,14 +7,15 @@ import javax.persistence.*
 
 @Entity
 @Table
-data class Message(
+class Message {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
         @JsonView(Views.Id::class)
-        var id: Long? = null,
+        var id: Long? = null
+
         @JsonView(Views.IdName::class)
-        val text: String
-) {
+        var text: String? = null
+
         @Column(updatable = false)
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         @JsonView(Views.FullMessage::class)

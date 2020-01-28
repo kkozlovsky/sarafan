@@ -16,13 +16,12 @@ class Comment {
 
     @ManyToOne
     @JoinColumn(name = "message_id")
-    var message: Message? = null;
+    var message: Message? = null
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     @JsonView(Views.FullMessage::class)
     var author: User? = null;
-
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

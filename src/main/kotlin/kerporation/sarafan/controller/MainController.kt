@@ -24,9 +24,9 @@ class MainController(@Autowired private val messageRepo: MessageRepo,
     @GetMapping
     fun index(model: Model, @AuthenticationPrincipal user: User?): String {
         val data: HashMap<Any, Any?> = hashMapOf()
-        user?.let {
-            data["profile"] = it
-            val messages: String = writer.writeValueAsString(messageRepo.findAll())
+        if (user != null) {
+            data["profile"] = user
+            val messages = writer.writeValueAsString(messageRepo.findAll())
             model.addAttribute("messages", messages)
         }
         model.addAttribute("frontendData", data)
