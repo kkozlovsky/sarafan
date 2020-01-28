@@ -1,4 +1,7 @@
 -- auto-generated definition
+drop table if exists spring_session;
+drop table if exists spring_session_attributes;
+
 create table spring_session
 (
     primary_id            char(36) not null
